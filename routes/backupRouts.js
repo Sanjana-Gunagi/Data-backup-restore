@@ -1,28 +1,18 @@
-const express = require("express");
-const router = express.Router();
-const multer = require("multer");
+router.post(
+  "/upload",
+  authMiddleware,
+  upload.single("file"),
+  uploadFile
+);
 
-const authMiddleware = require("../middleware/authMiddleware");
+router.get(
+  "/files",
+  authMiddleware,
+  getBackups
+);
 
-const {
-  uploadFile,
-  getBackups,
+router.get(
+  "/restore/:id",
+  authMiddleware,
   restoreFile
-} = require("../controllers/backupController");
-
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "uploads/");
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + "-" + file.originalname);
-  }
-});
-
-const upload = multer({ storage });
-
-router.post("/upload", upload.single("file"), uploadFile);
-router.get("/files", getBackups);
-router.get("/restore/:id", restoreFile);
-
-module.exports = router;
+);
