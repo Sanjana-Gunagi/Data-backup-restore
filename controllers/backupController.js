@@ -2,6 +2,49 @@ const db = require("../config/db");
 const crypto = require("crypto");
 const fs = require("fs");
 const path = require("path");
+const algorithm = "aes-256-cbc";
+const secretKey = process.env.SECRET_KEY || "mysecretkey";
+
+function encryptFile(buffer) {
+
+  const iv = crypto.randomBytes(16);
+
+  const cipher = crypto.createCipheriv(
+    algorithm,
+    crypto.createHash("sha256").update(secretKey).digest(),
+    iv
+  );
+
+  const encrypted = Buffer.concat([
+    cipher.update(buffer),
+    cipher.final()
+  ]);
+
+  return {
+    iv: iv.toString("hex"),
+    content: encrypted
+  };
+
+}
+
+function decryptFile(encryptedBuffer, ivHex) {
+
+  const iv = Buffer.from(ivHex, "hex");
+
+  const decipher = crypto.createDecipheriv(
+    algorithm,
+    crypto.createHash("sha256").update(secretKey).digest(),
+    iv
+  );
+
+  const decrypted = Buffer.concat([
+    decipher.update(encryptedBuffer),
+    decipher.final()
+  ]);
+
+  return decrypted;
+
+}
 
 exports.uploadFile = (req, res) => {
 
