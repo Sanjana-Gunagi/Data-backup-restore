@@ -137,8 +137,19 @@ exports.restoreFile = (req, res) => {
         return res.status(404).json({ message: "File not found on server" });
       }
 
-      res.download(absolutePath, result[0].filename);
+      const encryptedBuffer = fs.readFileSync(absolutePath);
 
+const decryptedBuffer = decryptFile(
+  encryptedBuffer,
+  result[0].iv
+);
+
+res.setHeader(
+  "Content-Disposition",
+  "attachment; filename=" + result[0].filename
+);
+
+res.send(decryptedBuffer);
     }
   );
 
