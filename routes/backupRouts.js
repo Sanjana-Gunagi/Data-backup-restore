@@ -1,18 +1,19 @@
-router.post(
-  "/upload",
-  authMiddleware,
-  upload.single("file"),
-  uploadFile
-);
+const express = require("express");
+const router = express.Router();
 
-router.get(
-  "/files",
-  authMiddleware,
-  getBackups
-);
+const upload = require("../middleware/upload");
+const authMiddleware = require("../middleware/authMiddleware");
 
-router.get(
-  "/restore/:id",
-  authMiddleware,
+const {
+  uploadFile,
+  getBackups,
   restoreFile
-);
+} = require("../controllers/backupController");
+
+router.post("/upload", authMiddleware, upload.single("file"), uploadFile);
+
+router.get("/files", authMiddleware, getBackups);
+
+router.get("/restore/:id", authMiddleware, restoreFile);
+
+module.exports = router;
