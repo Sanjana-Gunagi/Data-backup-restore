@@ -52,6 +52,9 @@ exports.uploadFile = (req, res) => {
   const file = req.file;
 
   const fileBuffer = fs.readFileSync(file.path);
+const encryptedData = encryptFile(fileBuffer);
+
+fs.writeFileSync(file.path, encryptedData.content);
 
   // Generate SHA256 hash
   const hash = crypto
